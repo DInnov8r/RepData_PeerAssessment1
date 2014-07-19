@@ -1,3 +1,5 @@
+## Open PA1_Assignment.md to view output.
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
