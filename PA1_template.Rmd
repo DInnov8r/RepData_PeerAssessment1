@@ -19,7 +19,7 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 ```{r setoptions, echo=FALSE}
 library(knitr)
-opts_chunk$set(fig.height=6, fig.width=8, fig.align='center')
+opts_chunk$set(fig.height=5, fig.width=7, fig.align='center')
 options(scipen = 4, digits=0)
 ```
 #### Loading and preprocessing the data
@@ -112,7 +112,7 @@ The histogram shows an increase in the number of days over 10,000 steps.  The me
 
 #### Are there differences in activity patterns between weekdays and weekends?
 
-```{r fig.width=8, fig.height=8, fig.align='center'}
+```{r fig.width=7, fig.height=7, fig.align='center'}
 r2["date"] <- as.Date(r2$date, "%Y-%m-%d")
 r2[(weekdays(r2$date) %in% c("Saturday", "Sunday")), "TypeOfDay"] <- "Weekend"
 r2[!(weekdays(r2$date) %in% c("Saturday", "Sunday")), "TypeOfDay"] <- "Weekday"
