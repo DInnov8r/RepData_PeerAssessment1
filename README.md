@@ -1,4 +1,4 @@
-## Open [PA1_Assignment.md](PA1_Assignment.md) to view output.
+## Open [PA1_template.md](PA1_template.md) to view report.
 
 ## Introduction
 
