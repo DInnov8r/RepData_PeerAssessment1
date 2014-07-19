@@ -1,8 +1,3 @@
----
-output:
-  html_document:
-    keep_md: yes
----
 ### Reproducible Research: Peer Assessment 1 - July 20, 2014
 
 #### Introduction
@@ -22,21 +17,19 @@ The variables included in this dataset are:
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
-```{r setoptions, echo=FALSE}
-library(knitr)
-opts_chunk$set(fig.height=5, fig.width=7, fig.align='center')
-options(scipen = 4, digits=0)
-```
+
 #### Loading and preprocessing the data
 
-```{r loaddata}
+
+```r
 activity <- read.csv("activity.csv", colClasses = c("numeric", "character", "numeric"))
 suppressMessages(require(lattice))
 activity["date"] <- as.Date(activity$date, "%Y-%m-%d")
 ```
 
 #### What is mean total number of steps taken per day?
-```{r histsteps}
+
+```r
 steps_per_day <- aggregate(steps ~ date, data = activity, sum, na.rm = TRUE)
 mean_steps_per_day <- mean(steps_per_day$steps)
 median_steps_per_day <- median(steps_per_day$steps)
@@ -46,12 +39,15 @@ hist(steps_per_day$steps, main = "Frequency of Steps Taken Per Day",
                ylab="Number of Days Step Count Range is Reached", col = "green", xlim=c(0,25000), ylim=c(0,20), breaks=10)
 ```
 
-The **mean** steps taken per day is **`r mean_steps_per_day`**.  The **median** steps taken per day is **`r median_steps_per_day`**.
+<img src="./PA1_template_files/figure-html/histsteps.png" title="plot of chunk histsteps" alt="plot of chunk histsteps" style="display: block; margin: auto;" />
+
+The **mean** steps taken per day is **10766**.  The **median** steps taken per day is **10765**.
 
 The histogram shows 36 days where the step count is greater than 10,000 steps per day.  This is consistent with the number of business days during the months of October and November when the data was collected.
 
 #### What is the average daily activity pattern?
-```{r activitypattern}
+
+```r
 time_series <- tapply(activity$steps, activity$interval %% 100 / 5 + activity$interval %/% 100 * 12 + 1, mean, na.rm = TRUE)
 
 max_interval <- which.max(time_series)
@@ -80,21 +76,25 @@ plot(row.names(time_series), time_series, type = "l", xlab = "5-minute Interval 
     col = "blue")
 ```
 
-The 5-minute interval with the **maximum** number of steps (on average) is interval **`r max_interval`**,
-or **between `r hour_of_day_start`:`r minute_of_hour_start`****`r am_pm_start` and `r hour_of_day_end`:`r minute_of_hour_end`****`r am_pm_end`**.  This may be when person from whom the data was collected exercises and/or walks to his or her place of work.
+<img src="./PA1_template_files/figure-html/activitypattern.png" title="plot of chunk activitypattern" alt="plot of chunk activitypattern" style="display: block; margin: auto;" />
+
+The 5-minute interval with the **maximum** number of steps (on average) is interval **104**,
+or **between 8:40****AM and 8:45****AM**.  This may be when person from whom the data was collected exercises and/or walks to his or her place of work.
 
 **Local maxima** occur at intervals **147**, **191**, and **226** or **12:15-12:20pm**, **3:55-4:00pm**, and **6:50-6:55pm**.  These may be times when the person takes a lunch break, takes an afternoon break, and returns home.
 
 #### Inputing missing values
-```{r}
+
+```r
 NA_count <- sum(is.na(activity))
 ```
 
-There are **`r NA_count`** missing values in the dataset.
+There are **2304** missing values in the dataset.
 
 Missing (_NA_) values for daily 5-minute intervals are filled with the interval average across all dates.  This is done using a series of dcasts to reshape the data to a wide format with rowMeans to fill NA values.  The resulting dataset is reshaped to a long format for subsequent analysis.
 
-```{r}
+
+```r
 suppressMessages(require(reshape))
 suppressMessages(require(reshape2))
 a <- dcast(activity, interval ~ date, value.var="steps", fill=0)
@@ -106,18 +106,23 @@ r2 <- reshape(r, direction = "long", varying=list(names(r)[2:length(names(r))]),
 steps_per_day2 <- aggregate(steps ~ date, data = r2, sum, na.rm = TRUE)
 hist(steps_per_day2$steps, main = "Frequency of Steps Taken Per Day", xlab = "Daily Step Count Range",
           ylab="Number of Days Step Count Range is Reached", col = "green", xlim=c(0,25000), ylim=c(0,20), breaks=10)
+```
 
+<img src="./PA1_template_files/figure-html/unnamed-chunk-2.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" />
+
+```r
 mean_steps_per_day <- mean(steps_per_day2$steps)
 median_steps_per_day <- median(steps_per_day2$steps)
 ```
 
-The mean steps taken per day is **`r mean_steps_per_day`**.  The median steps taken per day is **`r median_steps_per_day`**.
+The mean steps taken per day is **11279**.  The median steps taken per day is **11458**.
 
 The histogram shows an increase in the number of days over 10,000 steps.  The mean and median also increase.  Perhaps this person didn't wear their device during the Thanksgiving holiday.
 
 #### Are there differences in activity patterns between weekdays and weekends?
 
-```{r fig.width=7, fig.height=7, fig.align='center'}
+
+```r
 r2["date"] <- as.Date(r2$date, "%Y-%m-%d")
 r2[(weekdays(r2$date) %in% c("Saturday", "Sunday")), "TypeOfDay"] <- "Weekend"
 r2[!(weekdays(r2$date) %in% c("Saturday", "Sunday")), "TypeOfDay"] <- "Weekday"
@@ -131,5 +136,7 @@ splot <- xyplot(Steps ~ Interval | TypeOfDay, steps, type = "l", layout = c(1, 2
 update(splot,
        main="Comparison of Average Number of Steps During 5-minute\nTime Intervals In a 24-hour Day\nfor Weekend Days Versus Weekdays")
 ```
+
+<img src="./PA1_template_files/figure-html/unnamed-chunk-3.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
 
 Weekday steps show a large peak around **8:40AM** followed by 4 smaller peaks around lunch time, afternoon break time, and supper time.  Step data appears more uniform throughout weekend days and have smaller peaks.
